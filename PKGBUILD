@@ -17,6 +17,6 @@ package() {
     install -o root -g root -D ${srcdir}/btrfs_config  ${pkgdir}/etc/default/btrfs_advanced
 }
 
-md5sums=('ed2fe93bb65f9e2e7a4516a24361e81e'
+md5sums=('acdbaa277e58ffbc86332736997bafb2'
          '8198a307fe8a38195016e7265833473c'
          'dc9e745e44e9c9c3c4a2de5aa48ce3e1')

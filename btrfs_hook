@@ -219,7 +219,7 @@ MESSAGE
         ! btrfs subvolume snapshot ${BTRFS_DIR_WORK} ${BTRFS_DIR_WORK}${BTRFS_DIR_ACTIVE} &&
             btrfs_error "Unknown problem creating ${BTRFS_DIR_ACTIVE}, fallback to /" &&
             return 1
-        ! mkdir ${BTRFS_DIR_SNAPSHOT} &&
+        ! mkdir ${BTRFS_DIR_WORK}${BTRFS_DIR_SNAPSHOT} &&
             btrfs_error "Unknown problem creating ${BTRFS_DIR_SNAPSHOT}, fallback to /" &&
             return 1
         return 0
