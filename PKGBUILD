@@ -10,7 +10,7 @@ install="${pkgname}.install"
 depends=('mkinitcpio>=0.9.0' 'btrfs-progs')
 source=('btrfs_hook' 'btrfs_install')
 
-build() {
+package() {
     install -o root -g root -D ${srcdir}/btrfs_install ${pkgdir}/usr/lib/initcpio/install/btrfs_advanced
     install -o root -g root -D ${srcdir}/btrfs_hook ${pkgdir}/usr/lib/initcpio/hooks/btrfs_advanced
 }
