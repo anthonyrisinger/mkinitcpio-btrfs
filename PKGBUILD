@@ -2,7 +2,7 @@
 # Contributor: Michael Göhler
 pkgname='mkinitcpio-btrfs'
 pkgver=0.4.0
-pkgrel=0
+pkgrel=1
 pkgdesc='[initramfs] Rollback operations on BTRFS-based root devices'
 url='https://github.com/xtfxme/mkinitcpio-btrfs'
 arch=('any')
