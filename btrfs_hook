@@ -140,6 +140,7 @@ btrfs_mount_handler () {
         ! umount ${BTRFS_DIR_WORK} &&
             btrfs_fatal "Unable to umount root subvolume" &&
             return 1
+        BTRFS_IS_MOUNTED=false
 
         # force reload kernel
         btrfs_info "Reloading kernel from [${BTRFS_BOOT_SUBVOL}]..."
