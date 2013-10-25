@@ -304,7 +304,7 @@ btrfs_setup_rollback () {
 run_hook () {
 
     # root must be btrfs else silent return
-    if [ "$(blkid -s TYPE -o value ${root})" != "btrfs" -a "$(blkid -s TYPE -o value -lt ${root})" != "btrfs" ]; then
+    if [ "$(blkid -s TYPE -o value ${root} 2>/dev/null)" != "btrfs" -a "$(blkid -s TYPE -o value -lt ${root} 2>/dev/null)" != "btrfs" ]; then
         btrfs_warn "Root filesystem ${root} is not a BTRFS filesystem"
         return 0
     fi
