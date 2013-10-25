@@ -68,7 +68,7 @@ btrfs_mount_handler () {
     BTRFS_DIR_WORK=${work}
 
     # scan for multi device filesystems
-    btrfs device scan $device 2>&1 | grep -v "No medium found"
+    btrfs device scan 2>&1 | grep -v "No medium found"
 
     # temporary mount btrfs root subvolume
     if ! mount -t btrfs -o subvolid=0,rw ${root} ${work}; then
