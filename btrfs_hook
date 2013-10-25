@@ -60,6 +60,8 @@ BTRFS_DIR_ROLLBACK="${BTRFS_DIR_ROLLBACK%/}"
 : ${BTRFS_ROLLBACK_LIST_COUNT:=1}
 : ${BTRFS_KERNEL:="/boot/vmlinuz-linux"}
 : ${BTRFS_INITRD:="/boot/initramfs-linux.img"}
+: ${BTRFS_ENABLE_DEGRADED:=false}
+: ${BTRFS_ENABLE_DEGRADED_ROLLBACK:=false}
 
 btrfs_mount_handler () {
     local x i=1 work=${1%/}
@@ -68,15 +70,35 @@ btrfs_mount_handler () {
     # scan for multi device filesystems
     btrfs device scan $device 2>&1 | grep -v "No medium found"
 
+    # temporary mount btrfs root subvolume
+    if ! mount -t btrfs -o subvolid=0,rw ${root} ${work}; then
+
+        # try to mount in degraded mode
+        if ${BTRFS_ENABLE_DEGRADED}; then
+            if ! mount -t btrfs -o subvolid=0,rw,degraded ${root} ${work}; then
+                btrfs_fatal "Unable to mount root subvolume" &&
+                return 1
+            else
+                btrfs_warn "Mounted root subvolume in degraded mode"
+                sleep 3
+                rootflags="${rootflags},degraded"
+
+                # supress rollback choice in degraded mode
+                if ! ${BTRFS_ENABLE_DEGRADED_ROLLBACK}; then
+                    btrfs_info "Disabled rollback feature in degraded mode"
+                    kexeced=true
+                fi
+            fi
+        else
+            btrfs_fatal "Unable to mount root subvolume" &&
+            return 1
+        fi
+    fi
+    BTRFS_IS_MOUNTED=true
+
     # check if we already ran kexec
     : ${kexeced:=false}
     if ! ${kexeced}; then
-
-        # temporary mount btrfs root subvolume
-        ! mount -t btrfs -o subvolid=0,rw ${root} ${work} &&
-            btrfs_fatal "Unable to mount root subvolume" &&
-            return 1
-        BTRFS_IS_MOUNTED=true
 
         if ! [ -d ${work}${BTRFS_DIR_ACTIVE} ]; then
             if ! { btrfs_ask_volatile && btrfs_set_volatile; }; then
