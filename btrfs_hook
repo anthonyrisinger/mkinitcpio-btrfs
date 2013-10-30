@@ -176,7 +176,7 @@ btrfs_mount_handler () {
                     kver_pointer="$(printf "%d\n" "0x${kver_pointer_hex}")"
                     #
                     # 0x0200 -> 512
-                    kver="$(dd if=${work}${BTRFS_BOOT_SUBVOL}${BTRFS_KERNEL} bs=1 skip=$((512+${kver_pointer})) count=128 2>/dev/null | sed 's/\x0.*/\n/')"
+                    kver="$(dd if=${work}${BTRFS_BOOT_SUBVOL}${BTRFS_KERNEL} bs=1 skip=$((512+${kver_pointer})) count=128 2>/dev/null | strings -n 10)"
                     echo "${kver}" | grep "$(uname -r)" | grep "$(uname -v)" 1>/dev/null
                     if [ ${?} -eq 0 ]; then
                         BTRFS_KVER_DIFFER=false
