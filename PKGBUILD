@@ -1,5 +1,5 @@
 # Contributor: C Anthony Risinger
-# Contributor: Michael Göhler
+# Contributor: Michael Goehler
 pkgname='mkinitcpio-btrfs'
 pkgver=0.4.1
 pkgrel=1
@@ -17,6 +17,6 @@ package() {
     install -o root -g root -D ${srcdir}/btrfs_config  ${pkgdir}/etc/default/btrfs_advanced
 }
 
-md5sums=('a0d0b89578ca8bf36d9fe96b21208252'
+md5sums=('1b7cabe4393e24c15b4e93dea6d483d8'
          '8198a307fe8a38195016e7265833473c'
-         '7b5c896000e2d6337f45555eb593a046')
+         'aef37ebd18ae5c83b3e55056b666870b')

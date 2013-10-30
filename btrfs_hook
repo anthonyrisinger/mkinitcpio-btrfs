@@ -61,6 +61,8 @@ BTRFS_DIR_ROLLBACK="${BTRFS_DIR_ROLLBACK%/}"
 : ${BTRFS_ROLLBACK_KERNEL:=true}
 : ${BTRFS_KERNEL:="/boot/vmlinuz-linux"}
 : ${BTRFS_INITRD:="/boot/initramfs-linux.img"}
+: ${BTRFS_KVER_CHECK:=false}
+: ${BTRFS_KVER_DIFFER:=true}
 : ${BTRFS_ENABLE_DEGRADED:=false}
 : ${BTRFS_ENABLE_DEGRADED_ROLLBACK:=false}
 
@@ -161,22 +163,47 @@ btrfs_mount_handler () {
             # test if a new kernel is present
             if [ -f ${work}${BTRFS_BOOT_SUBVOL}${BTRFS_KERNEL} -a -f ${work}${BTRFS_BOOT_SUBVOL}${BTRFS_INITRD} ]; then
 
-                # copy kernel to initramfs
-                cp "${work}${BTRFS_BOOT_SUBVOL}${BTRFS_KERNEL}" "/tmp/linux"
-                cp "${work}${BTRFS_BOOT_SUBVOL}${BTRFS_INITRD}" "/tmp/initrd"
+                # compare running kernel's version against kernel image
+                if ${BTRFS_CHECK_KVER}; then
 
-                # unmount btrfs root subvolume
-                ! umount ${BTRFS_DIR_WORK} &&
-                    btrfs_fatal "Unable to umount root subvolume" &&
-                    return 1
-                BTRFS_IS_MOUNTED=false
+                    # extract kernel_version from header in kernel image
+                    # according to kernel documentation:
+                    # https://www.kernel.org/doc/Documentation/x86/boot.txt
+                    #
+                    # 0x020E -> 526
+                    kver_pointer_hex="$(dd if=${work}${BTRFS_BOOT_SUBVOL}${BTRFS_KERNEL} bs=1 skip=526 count=2 2>/dev/null | hexdump -e '"%x"')"
+                    # convert to decimal
+                    kver_pointer="$(printf "%d\n" "0x${kver_pointer_hex}")"
+                    #
+                    # 0x0200 -> 512
+                    kver="$(dd if=${work}${BTRFS_BOOT_SUBVOL}${BTRFS_KERNEL} bs=1 skip=$((512+${kver_pointer})) count=128 2>/dev/null | sed 's/\x0.*/\n/')"
+                    echo "${kver}" | grep "$(uname -r)" | grep "$(uname -v)" 1>/dev/null
+                    if [ ${?} -eq 0 ]; then
+                        BTRFS_KVER_DIFFER=false
+                    fi
+                fi
 
-                # force reload kernel
-                btrfs_info "Reloading kernel from [${BTRFS_BOOT_SUBVOL}]..."
-                kexec -f "/tmp/linux" --initrd="/tmp/initrd" --reuse-cmdline --append="kexeced=true"
+                # only load new kernel if versions differ
+                # if the above check failes they differ by default anyway
+                if ${BTRFS_KVER_DIFFER}; then
 
-                # at this point the kernel reloads the initramfs and
-                # restarts init - no further code is executed
+                    # copy kernel to initramfs
+                    cp "${work}${BTRFS_BOOT_SUBVOL}${BTRFS_KERNEL}" "/tmp/linux"
+                    cp "${work}${BTRFS_BOOT_SUBVOL}${BTRFS_INITRD}" "/tmp/initrd"
+
+                    # unmount btrfs root subvolume
+                    ! umount ${BTRFS_DIR_WORK} &&
+                        btrfs_fatal "Unable to umount root subvolume" &&
+                        return 1
+                    BTRFS_IS_MOUNTED=false
+
+                    # force reload kernel
+                    btrfs_info "Reloading kernel from [${BTRFS_BOOT_SUBVOL}]..."
+                    kexec -f "/tmp/linux" --initrd="/tmp/initrd" --reuse-cmdline --append="kexeced=true"
+
+                    # at this point the kernel reloads the initramfs and
+                    # restarts init - no further code is executed
+                fi
             else
                 btrfs_warn "Unable to load kernel from new root subvolume"
                 btrfs_warn "Check your config in /etc/default/btrfs_advanced"

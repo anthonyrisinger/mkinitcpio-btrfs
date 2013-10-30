@@ -25,6 +25,11 @@ BTRFS_DIR_ROLLBACK="/__rollback"
 #BTRFS_KERNEL="/boot/vmlinuz-linux"
 #BTRFS_INITRD="/boot/initramfs-linux.img"
 
+# EXPERIMENTAL: By default we reload the kernel always. Even if we do not
+# rollback. But you can enable this feature if you want the kernel to be
+# reloaded on version change only. It detects build number/date changes too.
+#BTRFS_KVER_CHECK=true
+
 # EXPERIMENTAL: Try to mount RAID setups, when there are devices missing.
 #
 # This is usualy wanted on productive setups, because btrfs supports to
