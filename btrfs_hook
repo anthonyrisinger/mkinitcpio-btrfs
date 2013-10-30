@@ -178,8 +178,8 @@ btrfs_mount_handler () {
                 # at this point the kernel reloads the initramfs and
                 # restarts init - no further code is executed
             else
-                btrfs_warn "Unable to load new kernel from root subvolume"
-                btrfs_warn "Check your configuration in /etc/default/btrfs_advanced"
+                btrfs_warn "Unable to load kernel from new root subvolume"
+                btrfs_warn "Check your config in /etc/default/btrfs_advanced"
             fi
 
             # unmount btrfs root subvolume
