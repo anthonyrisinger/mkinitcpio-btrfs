@@ -18,6 +18,8 @@ MSG
 
     cat <<'MSG'
 
+==> Have a look in /etc/default/btrfs_advanced to configure advanced options.
+
 ==> Run mkinitcpio to update your initramfs image
     # mkinitcpio -p linux
 

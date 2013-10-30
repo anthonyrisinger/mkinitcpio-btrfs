@@ -12,7 +12,16 @@ BTRFS_DIR_SNAPSHOT="/__snapshot"
 # triggered. To make it permanent create a snapshot to BTRFS_DIR_ACTIVE.
 BTRFS_DIR_ROLLBACK="/__rollback"
 
-# If you use a custom kernel, specify its location below.
+# Define if we have to do kernel rollbacks (enabled by default).
+#
+# In setup with a separate /boot partiton this must be enabled to prevent
+# this hook from searching for the kernel on your btrfs root.
+#BTRFS_ROLLBACK_KERNEL=false
+
+# If you use a custom kernel, specify its name and location below.
+#
+# Currently the kernel must be part on your root volume, as we don't mount
+# anything else in early boot stage.
 #BTRFS_KERNEL="/boot/vmlinuz-linux"
 #BTRFS_INITRD="/boot/initramfs-linux.img"
 

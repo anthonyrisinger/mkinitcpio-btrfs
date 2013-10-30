@@ -58,6 +58,7 @@ BTRFS_DIR_ROLLBACK="${BTRFS_DIR_ROLLBACK%/}"
 : ${BTRFS_ROLLBACK_CHOICE:="default"}
 : ${BTRFS_ROLLBACK_LIST:="default"}
 : ${BTRFS_ROLLBACK_LIST_COUNT:=1}
+: ${BTRFS_ROLLBACK_KERNEL:=true}
 : ${BTRFS_KERNEL:="/boot/vmlinuz-linux"}
 : ${BTRFS_INITRD:="/boot/initramfs-linux.img"}
 : ${BTRFS_ENABLE_DEGRADED:=false}
@@ -154,19 +155,27 @@ btrfs_mount_handler () {
         btrfs_info "Booting from subvolume [${BTRFS_BOOT_SUBVOL}]..."
         btrfs subvolume set-default ${BTRFS_BOOT_SUBVOLID} ${work}
 
-        # copy kernel to initramfs
-        cp "${work}${BTRFS_BOOT_SUBVOL}${BTRFS_KERNEL}" "/tmp/linux"
-        cp "${work}${BTRFS_BOOT_SUBVOL}${BTRFS_INITRD}" "/tmp/initrd"
+        if ${BTRFS_ROLLBACK_KERNEL}; then
+            # copy kernel to initramfs
+            cp "${work}${BTRFS_BOOT_SUBVOL}${BTRFS_KERNEL}" "/tmp/linux"
+            cp "${work}${BTRFS_BOOT_SUBVOL}${BTRFS_INITRD}" "/tmp/initrd"
 
-        # unmount btrfs root subvolume
-        ! umount ${BTRFS_DIR_WORK} &&
-            btrfs_fatal "Unable to umount root subvolume" &&
-            return 1
-        BTRFS_IS_MOUNTED=false
+            # unmount btrfs root subvolume
+            ! umount ${BTRFS_DIR_WORK} &&
+                btrfs_fatal "Unable to umount root subvolume" &&
+                return 1
+            BTRFS_IS_MOUNTED=false
 
-        # force reload kernel
-        btrfs_info "Reloading kernel from [${BTRFS_BOOT_SUBVOL}]..."
-        kexec -f "/tmp/linux" --initrd="/tmp/initrd" --reuse-cmdline --append="kexeced=true"
+            # force reload kernel
+            btrfs_info "Reloading kernel from [${BTRFS_BOOT_SUBVOL}]..."
+            kexec -f "/tmp/linux" --initrd="/tmp/initrd" --reuse-cmdline --append="kexeced=true"
+        else
+            # unmount btrfs root subvolume
+            ! umount ${BTRFS_DIR_WORK} &&
+                btrfs_fatal "Unable to umount root subvolume" &&
+                return 1
+            BTRFS_IS_MOUNTED=false
+        fi
     fi
 
     btrfs_process_mount ${work}
