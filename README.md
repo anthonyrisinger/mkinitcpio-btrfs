@@ -79,12 +79,24 @@ Before doing that, install mkinitcpio-btrfs.
     $ cd /root/mkinitcpio-btrfs
     $ makepkg -i --asroot
 
-Add btrfs_advanced to your HOOKS variable, Modify /etc/default/btrfs_advanced
-if needed, and generate your initial RAM disk.
+Add btrfs_advanced to your HOOKS variable.
+
+    $ vi /etc/mkinitcpio.conf
+
+Modify /etc/default/btrfs_advanced to your needs.
+
+    $ vi /etc/default/btrfs_advanced
+
+Generate your initial RAM disk.
+
+    $ mkinitcpio -p linux
 
 Install your bootloader and reboot.
 
-### Hints:
+Note: In multi device RAID setups, install your bootloader to multible
+drives too.
+
+### Usage Hints:
 
 Create a snapshot of your root filesystem.
 
@@ -96,7 +108,7 @@ Use "btrfs scrub" for periodic online filesystem checks.
     $ sudo btrfs scrub start /
     $ sudo btrfs scrub status /
 
-If you use a multi device RAID setup, make sure you rebalance after system upgrades, to prevent kernel panic on device failure.
+If you use a multi device RAID setup, make sure you rebalance after system
+upgrades, to prevent kernel panic on device failure.
 
     $ sudo btrfs balance /
-
