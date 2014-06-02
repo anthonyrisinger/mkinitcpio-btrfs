@@ -1,8 +1,8 @@
 # Contributor: C Anthony Risinger
 # Contributor: Michael Goehler
 pkgname='mkinitcpio-btrfs'
-pkgver=0.4.1
-pkgrel=8
+pkgver=0.4.2
+pkgrel=1
 pkgdesc='mkinitcpio hook containing advanced features for btrfs-based root devices'
 url='https://github.com/xtfxme/mkinitcpio-btrfs'
 arch=('any')
