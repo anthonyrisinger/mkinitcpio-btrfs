@@ -258,8 +258,13 @@ support.  To enable support, a snapshot of your system's current state must be
 made to ${BTRFS_DIR_ACTIVE}.
 This snapshot will subsequently be used as the primary boot device from now on.
 This operation is safe. Your original / will remain intact and unused. It is
-up to you to rm -rf the stagnant files from your old / (var, usr, lib, etc),
+up to you to rm -rf the stagnant files from your old /{var,usr,lib,etc},
 and reclaim what would in time become dead space.
+
+ATTENTION: When deleting your old /boot, it may be necessary to reconfigure AND
+           reinstall your bootloader, to search its configuration under
+           ${BTRFS_DIR_ACTIVE}/boot! Otherwise your system may become
+           unbootable!
 
 DO NOT remove ${BTRFS_DIR_ACTIVE}, ${BTRFS_DIR_SNAPSHOT}, or ${BTRFS_DIR_ROLLBACK}.
 
