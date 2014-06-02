@@ -2,13 +2,14 @@
 # Contributor: Michael Goehler
 pkgname='mkinitcpio-btrfs'
 pkgver=0.4.1
-pkgrel=2
+pkgrel=3
 pkgdesc='mkinitcpio hook containing advanced features for btrfs-based root devices'
 url='https://github.com/xtfxme/mkinitcpio-btrfs'
 arch=('any')
 license=('BSD')
 install="${pkgname}.install"
 depends=('mkinitcpio>=0.9.0' 'btrfs-progs' 'kexec-tools')
+backup=('etc/default/btrfs_advanced')
 source=('btrfs_hook' 'btrfs_install' 'btrfs_config')
 
 package() {
