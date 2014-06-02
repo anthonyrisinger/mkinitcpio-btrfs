@@ -64,6 +64,7 @@ BTRFS_DIR_ROLLBACK="${BTRFS_DIR_ROLLBACK%/}"
 : ${BTRFS_KVER_DIFFER:=true}
 : ${BTRFS_ENABLE_DEGRADED:=false}
 : ${BTRFS_ENABLE_DEGRADED_ROLLBACK:=false}
+: ${BTRFS_BOOT_DELAY:=5}
 
 btrfs_mount_handler () {
     local x i=1 work=${1%/}
@@ -227,6 +228,9 @@ btrfs_process_mount () {
 
     # remove subvol/subvolid mount option
     rootflags="$(echo ${rootflags} | sed 's/subvol[id]*=[^,]*,\?//g;s/,$//g')"
+
+    # sleep a short period of time to read console messages
+    [ "${quiet}" != "y" ] && sleep ${BTRFS_BOOT_DELAY}
 
     # call standard mount handler
     default_mount_handler ${1}
