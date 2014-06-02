@@ -65,7 +65,7 @@ BTRFS_DIR_ROLLBACK="${BTRFS_DIR_ROLLBACK%/}"
 : ${BTRFS_KVER_DIFFER:=true}
 : ${BTRFS_ENABLE_DEGRADED:=false}
 : ${BTRFS_ENABLE_DEGRADED_ROLLBACK:=false}
-: ${BTRFS_BOOT_DELAY:=5}
+: ${BTRFS_BOOT_DELAY:=0}
 
 btrfs_mount_handler () {
     local x i=1 work=${1%/}

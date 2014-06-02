@@ -2,7 +2,7 @@
 # Contributor: Michael Goehler
 pkgname='mkinitcpio-btrfs'
 pkgver=0.4.1
-pkgrel=6
+pkgrel=7
 pkgdesc='mkinitcpio hook containing advanced features for btrfs-based root devices'
 url='https://github.com/xtfxme/mkinitcpio-btrfs'
 arch=('any')
@@ -18,6 +18,6 @@ package() {
     install -o root -g root -D ${srcdir}/btrfs_config  ${pkgdir}/etc/default/btrfs_advanced
 }
 
-md5sums=('7879b6073b9dfffc12f42b4325dd5135'
+md5sums=('99638002a9a7bb4ebc0465c415bed732'
          '8198a307fe8a38195016e7265833473c'
          '73806b834c9fa8a8bb39d0201c63f21a')
