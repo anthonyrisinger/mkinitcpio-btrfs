@@ -54,6 +54,7 @@ BTRFS_DIR_ROLLBACK="${BTRFS_DIR_ROLLBACK%/}"
 : ${BTRFS_DIR_WORK:="/new_root"}
 : ${BTRFS_BOOT_SUBVOL:="."}
 : ${BTRFS_BOOT_SUBVOLID:=0}
+: ${BTRFS_ROLLBACK_DIALOG:=true}
 : ${BTRFS_ROLLBACK_CHOICE:="default"}
 : ${BTRFS_ROLLBACK_LIST:="default"}
 : ${BTRFS_ROLLBACK_LIST_COUNT:=1}
@@ -113,7 +114,7 @@ btrfs_mount_handler () {
         if ${BTRFS_HAS_ROLLBACK}; then
 
             # ask for rollback
-            if btrfs_ask_rollback; then
+            if ${BTRFS_ROLLBACK_DIALOG} && btrfs_ask_rollback; then
 
                 # collect available snapshots
                 for x in $(btrfs subvolume list ${work} --sort=gen | awk '{print $2 ",/" $9}' | grep -E "^[0-9]*,${BTRFS_DIR_SNAPSHOT}/"); do

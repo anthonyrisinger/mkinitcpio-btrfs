@@ -25,6 +25,12 @@ BTRFS_DIR_ROLLBACK="/__rollback"
 #BTRFS_KERNEL="/boot/vmlinuz-linux"
 #BTRFS_INITRD="/boot/initramfs-linux.img"
 
+# It is possible to move and replace BTRFS_DIR_ACTIVE with an older snapshot
+# while it is mounted and reboot afterwards. If you prefer to rollback like
+# this, you can optionally disable the on-boot rollback dialog. This will
+# improve your boot speed by > 3 seconds.
+#BTRFS_ROLLBACK_DIALOG=false
+
 # By default we reload the kernel image from the chosen boot root subvolume
 # only if the version and build-number/date differs from `uname -rv`.
 #
