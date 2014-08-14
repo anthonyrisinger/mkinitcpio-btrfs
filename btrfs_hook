@@ -97,7 +97,7 @@ btrfs_mount_handler () {
                 # supress rollback choice in degraded mode
                 if ! ${BTRFS_ENABLE_DEGRADED_ROLLBACK}; then
                     btrfs_info "Disabled rollback feature in degraded mode"
-                    kexeced=true
+                    kexeced=1
                 fi
             fi
         else
@@ -107,8 +107,7 @@ btrfs_mount_handler () {
     fi
 
     # check if we already ran kexec
-    : ${kexeced:=false}
-    if ! ${kexeced}; then
+    if [ -z "$kexeced" ]; then
 
         if ! [ -d ${work}${BTRFS_DIR_ACTIVE} ]; then
 
@@ -209,7 +208,7 @@ btrfs_mount_handler () {
 
                         # force reload kernel
                         btrfs_info "Reloading kernel from [${BTRFS_BOOT_SUBVOL}]..."
-                        kexec -f "/tmp/linux" --initrd="/tmp/initrd" --reuse-cmdline --append="kexeced=true"
+                        kexec -f "/tmp/linux" --initrd="/tmp/initrd" --reuse-cmdline --append="kexeced"
 
                         # at this point the kernel reloads the initramfs and
                         # restarts init - no further code is executed
