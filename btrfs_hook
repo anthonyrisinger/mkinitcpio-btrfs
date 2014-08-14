@@ -71,9 +71,6 @@ btrfs_mount_handler () {
     local x i=1 work=${1%/}
     BTRFS_DIR_WORK=${work}
 
-    # scan for multi device filesystems
-    btrfs device scan 2>&1 | grep -v -E "Scanning for Btrfs filesystems|No medium found"
-
     # temporary mount btrfs root subvolume
     if ! mount -t btrfs -o subvolid=0,rw ${root} ${work}; then
 
@@ -358,41 +355,13 @@ btrfs_setup_rollback () {
 
 # main
 run_hook () {
-
     # root must be btrfs else silent return
     if [ "$(blkid -s TYPE -o value ${root} 2>/dev/null)" != "btrfs" -a "$(blkid -s TYPE -o value -lt ${root} 2>/dev/null)" != "btrfs" ]; then
         btrfs_warn "Root filesystem ${root} is not a BTRFS filesystem"
         return 0
     fi
 
-    # try to load kernel module else silent return
-    ! modprobe btrfs &&
-        btrfs_fatal "Unable to insert BTRFS module" &&
-        return 1
-
-    # wait 10 seconds for creation of /dev/btrfs-control by udev
-    local i=0 timeout=100
-    while [ ! -e /dev/btrfs-control -a ${i} -lt ${timeout} ]; do
-        sleep 0.1
-        i=$((${i}+1))
-    done
-    # else silent return
-    ! [ -e /dev/btrfs-control ] &&
-        btrfs_fatal "Timeout waiting for /dev/btrfs-control" &&
-        return 1
-
-    # if btrfs binary exists override mount handler
-    if [ -n "$(type -p btrfs)" ]; then
-        btrfs_info "Using btrfs binary and advanced mount handling"
-        mount_handler="btrfs_mount_handler"
-        return 0
-    else
-        # no way to mount/scan for multi device
-        # default handler can mount single device
-        btrfs_error "The btrfs binary is missing, trying default handler..."
-        return 0
-    fi
-
+    mount_handler="btrfs_mount_handler"
 }
 
 # vim:set syntax=sh:
