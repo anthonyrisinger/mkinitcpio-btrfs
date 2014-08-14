@@ -67,9 +67,19 @@ BTRFS_DIR_ROLLBACK="${BTRFS_DIR_ROLLBACK%/}"
 : ${BTRFS_ENABLE_DEGRADED_ROLLBACK:=false}
 : ${BTRFS_BOOT_DELAY:=0}
 
+root_is_btrfs() {
+    [ "$(blkid -s TYPE -o value "$root" )" != "btrfs" ] &&
+        [ "$(blkid -s TYPE -o value -lt "$root" )" != "btrfs" ]
+} 2>/dev/null
+
 btrfs_mount_handler () {
     local x i=1 work=${1%/}
     BTRFS_DIR_WORK=${work}
+
+    if ! root_is_btrfs; then
+        default_mount_handler "$@"
+        return
+    fi
 
     # temporary mount btrfs root subvolume
     if ! mount -t btrfs -o subvolid=0,rw ${root} ${work}; then
@@ -355,12 +365,6 @@ btrfs_setup_rollback () {
 
 # main
 run_hook () {
-    # root must be btrfs else silent return
-    if [ "$(blkid -s TYPE -o value ${root} 2>/dev/null)" != "btrfs" -a "$(blkid -s TYPE -o value -lt ${root} 2>/dev/null)" != "btrfs" ]; then
-        btrfs_warn "Root filesystem ${root} is not a BTRFS filesystem"
-        return 0
-    fi
-
     mount_handler="btrfs_mount_handler"
 }
 
