@@ -72,6 +72,15 @@ root_is_btrfs() {
         [ "$(blkid -s TYPE -o value -lt "$root" )" != "btrfs" ]
 } 2>/dev/null
 
+kver() {
+    # extract kernel_version from header in kernel image
+    # according to kernel documentation:
+    # https://www.kernel.org/doc/Documentation/x86/boot.txt
+
+    local offset=$(hexdump -s 526 -n 2 -e '"%d"' "$1")
+    hexdump -s $(( 0x200 + offset )) -n 128 -e '"%.2s"' "$1" | strings -n10
+}
+
 btrfs_mount_handler () {
     local x i=1 work=${1%/}
     BTRFS_DIR_WORK=${work}
@@ -175,20 +184,7 @@ btrfs_mount_handler () {
 
                     # compare running kernel's version against kernel image
                     if ${BTRFS_CHECK_KVER}; then
-
-                        # extract kernel_version from header in kernel image
-                        # according to kernel documentation:
-                        # https://www.kernel.org/doc/Documentation/x86/boot.txt
-                        #
-                        # 0x020E -> 526
-                        kver_pointer_hex="$(dd if=${work}${BTRFS_BOOT_SUBVOL}${BTRFS_KERNEL} bs=1 skip=526 count=2 2>/dev/null | hexdump -e '"%x"')"
-                        # convert to decimal
-                        kver_pointer="$(printf "%d\n" "0x${kver_pointer_hex}")"
-                        #
-                        # 0x0200 -> 512
-                        kver="$(dd if=${work}${BTRFS_BOOT_SUBVOL}${BTRFS_KERNEL} bs=1 skip=$((512+${kver_pointer})) count=128 2>/dev/null | strings -n 10)"
-                        echo "${kver}" | grep "$(uname -r)" | grep "$(uname -v)" 1>/dev/null
-                        if [ ${?} -eq 0 ]; then
+                        if kver "${work}${BTRFS_BOOT_SUBVOL}${BTRFS_KERNEL}" | grep -F "$(uname -r)" | grep -Fq "$(uname -v)"; then
                             BTRFS_KVER_DIFFER=false
                         fi
                     fi
