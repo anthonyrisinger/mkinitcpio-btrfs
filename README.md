@@ -11,7 +11,7 @@ https://wiki.archlinux.org/index.php/Official_Arch_Linux_Install_Guide
 
 Before you start your installation update btrfs-progs and install git.
 
-    $ pacman -Syu btrfs-progs git
+    $ pacman -Sy btrfs-progs git
 
 Partition your drive as you prefer and use mkfs.btrfs to create your root
 partition. Setting up RAID 1 (or higher) is recommended for btrfs
