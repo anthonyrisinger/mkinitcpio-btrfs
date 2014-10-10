@@ -61,7 +61,7 @@ Clone mkinitcpio-btrfs to your new root.
 
 Create your /etc/fstab and chroot into your installation.
 
-    $ genfstab -p /mnt >> /mnt/etc/fstab
+    $ genfstab -U -p /mnt >> /mnt/etc/fstab
     $ arch-chroot /mnt /bin/bash
 
 Create a place where you mount the btrfs root to create snapshots later.
