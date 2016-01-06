@@ -68,8 +68,8 @@ BTRFS_DIR_ROLLBACK="${BTRFS_DIR_ROLLBACK%/}"
 : ${BTRFS_BOOT_DELAY:=0}
 
 root_is_btrfs() {
-    [ "$(blkid -s TYPE -o value "$root" )" != "btrfs" ] &&
-        [ "$(blkid -s TYPE -o value -lt "$root" )" != "btrfs" ]
+    [ "$(blkid -s TYPE -o value \"$root\" )" != "btrfs" ] &&
+        [ "$(blkid -s TYPE -o value -lt \"$root\" )" != "btrfs" ]
 } 2>/dev/null
 
 kver() {
@@ -86,6 +86,7 @@ btrfs_mount_handler () {
     BTRFS_DIR_WORK=${work}
 
     if ! root_is_btrfs; then
+        btrfs_warn "[${root}] is not a btrfs filesystem, aborting hook"
         default_mount_handler "$@"
         return
     fi
